@@ -3,8 +3,9 @@ import fastclick from 'fastclick';
 import Vue from 'vue';
 import App from './App';
 import router from './router';
-import vueLazyLoad from 'vue-lazyload'
+import vueLazyLoad from 'vue-lazyload';
 
+import store from './store/index.js';
 
 import './common/style/index.scss';
 
@@ -19,5 +20,6 @@ Vue.use(vueLazyLoad,{
 new Vue({
   el: '#app',
   router,
+  store,
   render: h => h(App),
 });

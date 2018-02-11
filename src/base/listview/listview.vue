@@ -4,7 +4,7 @@
            <li v-for="group in data" class="list-group" ref="listGroup">
                <h2 class="list-group-title">{{group.title}}</h2>
                <ul>
-                   <li class="list-group-item" v-for="item in group.items">
+                   <li class="list-group-item" @click="selectItem(item)" v-for="item in group.items">
                        <img v-lazy="item.avatar" class="avatar" alt="">
                        <span class="name">{{item.name}}</span>
                    </li>
@@ -34,15 +34,15 @@ import Loading from "base/loading/loading";
 import { getData } from "common/js/dom";
 
 const ANCHOR_HEIGHT = 18;
-const TITLE_HEIGHT =20;
+const TITLE_HEIGHT = 20;
 export default {
-    data(){
-        return{
-            scrollY:-1,
-            currentIndex:0,
-            diff:-1
-        }
-    },
+  data() {
+    return {
+      scrollY: -1,
+      currentIndex: 0,
+      diff: -1
+    };
+  },
   props: {
     data: {
       type: Array,
@@ -65,18 +65,19 @@ export default {
         return item.title.substr(0, 1);
       });
     },
-    fixTitle(){
-        if(this.scrollY >0){
-            return '';
-        }
-        return this.data[this.currentIndex]? this.data[this.currentIndex].title : '';
+    fixTitle() {
+      if (this.scrollY > 0) {
+        return "";
+      }
+      return this.data[this.currentIndex]
+        ? this.data[this.currentIndex].title
+        : "";
     }
   },
   methods: {
     scroll(pos) {
-      
       this.scrollY = pos.y;
-    //   console.log(this.scrollY );
+      //   console.log(this.scrollY );
     },
     onShortCutTouchStart(e) {
       let anchorIndex = getData(e.target, "index");
@@ -97,66 +98,71 @@ export default {
       this._scrollTo(anchorIndex);
     },
     _scrollTo(index) {
-        if(!index && index !== 0) {return}
+      if (!index && index !== 0) {
+        return;
+      }
 
-        if(index < 0){
-            index = 0;
-        }else if(index > this.listheight.length-2){
-            index = this.listheight.length-2;
-        }
+      if (index < 0) {
+        index = 0;
+      } else if (index > this.listheight.length - 2) {
+        index = this.listheight.length - 2;
+      }
 
-        this.scrollY = - this.listheight[index];
+      this.scrollY = -this.listheight[index];
       this.$refs.listview.scrollToElement(this.$refs.listGroup[index], 0);
     },
-    _calculateHeight(){
-        this.listheight = [];
-        const list = this.$refs.listGroup;
-        let height = 0;
+    _calculateHeight() {
+      this.listheight = [];
+      const list = this.$refs.listGroup;
+      let height = 0;
+      this.listheight.push(height);
+      for (let i = 0; i < list.length; i++) {
+        let item = list[i];
+        height += item.clientHeight;
         this.listheight.push(height);
-        for(let i=0;i<list.length;i++){
-            let item = list[i];
-            height += item.clientHeight;
-            this.listheight.push(height);
-        }
+      }
+    },
+    selectItem(item) {
+      this.$emit("select", item);
     }
   },
-  watch:{
-      data(){
-          setTimeout(() => {
-              this._calculateHeight();
-          }, 20);
-      },
-      scrollY(newY) {
-          
-        const listHeight = this.listheight
+  watch: {
+    data() {
+      setTimeout(() => {
+        this._calculateHeight();
+      }, 20);
+    },
+    scrollY(newY) {
+      const listHeight = this.listheight;
 
-        // 当滚动到顶部，newY>0
-        if (newY > 0) {
-          this.currentIndex = 0
-          return
-        }
-
-        // 在中间部分滚动
-        for (let i = 0; i < listHeight.length - 1; i++) {
-          let height1 = listHeight[i]
-          let height2 = listHeight[i + 1]
-          if (-newY >= height1 && -newY < height2) {
-            this.currentIndex = i
-            this.diff = height2 + newY
-            return
-          }
-        }
-        // 当滚动到底部，且-newY大于最后一个元素的上限
-        this.currentIndex = listHeight.length - 2
-      },
-      diff(newVal) {
-        let fixedTop = (newVal > 0 && newVal < TITLE_HEIGHT) ? newVal - TITLE_HEIGHT : 0
-        if (this.fixedTop === fixedTop) {
-          return
-        }
-        this.fixedTop = fixedTop
-        this.$refs.fixed.style.transform = `translate3d(0,${fixedTop}px,0)`
+      // 当滚动到顶部，newY>0
+      if (newY > 0) {
+        this.currentIndex = 0;
+        return;
       }
+
+      // 在中间部分滚动
+      for (let i = 0; i < listHeight.length - 1; i++) {
+        let height1 = listHeight[i];
+        let height2 = listHeight[i + 1];
+        if (-newY >= height1 && -newY < height2) {
+          this.currentIndex = i;
+          this.diff = height2 + newY;
+          return;
+        }
+      }
+      // 当滚动到底部，且-newY大于最后一个元素的上限
+      this.currentIndex = listHeight.length - 2;
+    },
+    diff(newVal) {
+      let fixedTop =
+        newVal > 0 && newVal < TITLE_HEIGHT ? newVal - TITLE_HEIGHT : 0;
+      if (this.fixedTop === fixedTop) {
+        return;
+      }
+      this.fixedTop = fixedTop;
+      this.$refs.fixed.style.transform = `translate3d(0,${fixedTop}px,0)`;
+    }
   }
 };
 </script>
