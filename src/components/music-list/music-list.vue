@@ -1,6 +1,6 @@
 <template>
   <div class="music-list">
-      <div class="back">
+      <div class="back" @click="back">
           <i class="icon-back"></i>
       </div>
       <h1 class="title" v-html="title"></h1>
@@ -26,7 +26,12 @@
 import Scroll from "base/scroll/scroll";
 import SongList from "base/song-list/song-list";
 
+import {prefixStyle} from 'common/js/dom';
+
 const RESERED_HEIGHT = 40;
+const transform = prefixStyle('transform');
+const backdrop = prefixStyle('backdrop-filter')
+
 export default {
   props: {
     bgImage: {
@@ -72,11 +77,13 @@ export default {
   methods: {
     scroll(pos) {
       this.scrollY = pos.y;
+    },
+    back(){
+        this.$router.back();
     }
   },
   watch: {
     scrollY(newY) {
-    //   console.log(newY);
       let translateY = Math.max(this.minTranslateY, newY);
       let scale = 1;
       let zIndex = 0;
@@ -90,11 +97,8 @@ export default {
         blur = Math.min(20, percent * 20);
       }
 
-      this.$refs.layer.style["transform"] = `translate3d(0,${translateY}px,0)`;
-      this.$refs.layer.style[
-        "-webkit-transform"
-      ] = `translate3d(0,${translateY}px,0)`;
-
+      this.$refs.filter.style[backdrop] = `blur(${blur}px)`;//瓦斯模糊，PC端看不到
+      this.$refs.layer.style[transform] = `translate3d(0,${translateY}px,0)`;
       if (newY < this.minTranslateY) {
         zIndex = 10;
         this.$refs.bgImage.style.paddingTop = 0;
@@ -105,7 +109,7 @@ export default {
         this.$refs.bgImage.style.height = 0;
         this.$refs.playBtn.style.display = "";
       }
-      this.$refs.bgImage.style['transform'] = `scale(${scale})`;
+      this.$refs.bgImage.style[transform] = `scale(${scale})`;
       this.$refs.bgImage.style.zIndex = zIndex;
     }
   }
