@@ -73,7 +73,7 @@
         </div>
       </div>
     </transition>
-    <audio ref="audio" :src="currentSong.url" @canplay="ready" @error="error" @timeupdate="undateTime" @end="end"></audio>
+    <audio ref="audio" :src="currentSong.url" @canplay="ready" @error="error" @timeupdate="undateTime" @ended="end"></audio>
   </div>
 </template>
 
@@ -86,6 +86,7 @@ import ProgressCircle from 'base/progress-circle/progress-circle';
 
 import {playMode} from 'common/js/config';
 import {shuffle} from 'common/js/util.js';
+import Lyric from 'lyric-parser'
 
 const transform = prefixStyle('transform')
 const transitionDuration = prefixStyle('transitionDuration')
@@ -95,7 +96,8 @@ export default {
     return {
       songReady:false,//用于防止快速点击
       currentTime:0,
-      radius:32
+      radius:32,
+      currentLyric:null
     }
   },
   computed: {
@@ -197,7 +199,16 @@ export default {
        this.songReady = false;
     },
     end(){
-      this.next();
+      // console.log(1312312)
+      if(this.mode === playMode.loop){
+        this.loop()
+      }else{
+        this.next();
+      }
+    },
+    loop(){
+      this.$refs.audio.currentTime = 0;
+      this.$refs.audio.play();
     },
     next(){
       if(!this.songReady){
@@ -263,6 +274,12 @@ export default {
       })
       this.setCurrentIndex(index);
     },
+    getLyric(){
+      this.currentSong.getLyric().then((lyric)=>{
+        this.currentLyric = new Lyric(lyric);
+        console.log(this.currentLyric);
+      })
+    },
     ...mapMutations({
       setFullScreen: "SET_FULL_SCREEN",
       setPlayingState:'SET_PLAYING_STATE',
@@ -279,6 +296,7 @@ export default {
       }
       this.$nextTick(()=>{
         this.$refs.audio.play();
+        this.getLyric();
       })
       
     },

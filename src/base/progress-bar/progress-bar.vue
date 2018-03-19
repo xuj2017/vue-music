@@ -67,8 +67,12 @@ export default {
           this.$refs.progressBtn.style[transform] =`translate3d(${offsetWidth}px,0,0)`;
       },
       progressClick(e){
-          this._offset(e.offsetX);
-          this._triggerPercent();
+          //点击progressBtn时，e.offsetX获取不对
+        //   this._offset(e.offsetX);
+        const rect = this.$refs.progressBar.getBoundingClientRect();
+        const offsetWidth = e.pageX-rect.left;
+        this._offset(offsetWidth);
+        this._triggerPercent();
       }
   }
 }
