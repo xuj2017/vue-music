@@ -97,6 +97,9 @@ export default {
       let anchorIndex = parseInt(this.touch.anchorIndex) + delta;
       this._scrollTo(anchorIndex);
     },
+    refresh(){
+      this.$refs.listview.refresh();
+    },
     _scrollTo(index) {
       if (!index && index !== 0) {
         return;
