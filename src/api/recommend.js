@@ -34,3 +34,35 @@ export function getDescList(){
     })
     // return jsonp(url,data,options)
 }
+
+
+export function getSongList(disstid) {
+
+
+    const url = '/api/getcdList'
+  
+    const data = Object.assign({}, commonParams, {
+      disstid,
+      type: 1,
+      json: 1,
+      utf8: 1,
+      onlysong: 0,
+      platform: 'yqq',
+      hostUin: 0,
+      needNewCode: 0
+    })
+  
+    return axios.get(url,{
+        params:data
+    }).then((res) => {
+        // var ret = res.data;
+        // var reg = /^\w+\((.+)\)/;
+		// var matches = ret.match(reg)
+        // if(matches){
+        //     ret = JSON.parse(matches[1])
+        // }
+        
+        // return Promise.resolve(ret)
+        return Promise.resolve(res.data)
+    })
+  }

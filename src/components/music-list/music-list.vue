@@ -83,7 +83,7 @@ export default {
     this.$refs.list.$el.style.top = `${this.imageHeight}px`;
   },
   methods: {
-    handleplayList(playlist){
+    handlePlaylist(playlist){
       const bottom = playlist.length>0 ?'60px' : '';
       this.$refs.list.$el.style.bottom = bottom;
       this.$refs.list.refresh();
