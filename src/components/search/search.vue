@@ -19,6 +19,7 @@
       <div class="search-result" v-show="query">
         <suggest :query="query"></suggest>
       </div>
+      <router-view></router-view>
   </div>
 </template>
 
@@ -115,13 +116,13 @@ export default {
         }
       }
     }
-    .search-result {
+  }
+  .search-result {
       position: fixed;
       width: 100%;
       top: 178px;
       bottom: 0;
     }
-  }
 }
 </style>
 
