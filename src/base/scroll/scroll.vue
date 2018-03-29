@@ -64,6 +64,12 @@ export default {
           }
         })
       }
+
+      if(this.beforeScroll){
+        this.scroll.on('beforeScrollStart',()=>{
+          this.$emit('beforeScroll')
+        })
+      }
     },
     enable() {
       this.scroll && this.scroll.enable();
