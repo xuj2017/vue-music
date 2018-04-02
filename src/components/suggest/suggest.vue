@@ -117,6 +117,9 @@ export default {
       });
       return ret;
     },
+    refresh(){
+      this.$refs.suggest.refresh();
+    },
     selectItem(item) {
       if (item.type === TYPE_SINGER) {
         const singer = new Singer(
