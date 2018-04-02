@@ -89,11 +89,12 @@
             <i @click.stop="togglePlaying" class="icon-mini" :class="miniIcon"></i>
           </progress-circle>
         </div>
-        <div class="control">
+        <div class="control" @click.stop="showPlaylist" >
           <i class="icon-playlist"></i>
         </div>
       </div>
     </transition>
+    <playlist ref="playlist"></playlist>
     <audio ref="audio" :src="currentSong.url" @canplay="ready" @error="error" @timeupdate="undateTime" @ended="end"></audio>
   </div>
 </template>
@@ -109,6 +110,7 @@ import {playMode} from 'common/js/config';
 import {shuffle} from 'common/js/util.js';
 import Lyric from 'lyric-parser';
 import Scroll from 'base/scroll/scroll';
+import Playlist from 'components/playlist/playlist'
 
 
 const transform = prefixStyle('transform')
@@ -417,6 +419,9 @@ export default {
         this.$refs.middleL.style[transitionDuration] = `${time}ms`
         this.touch.initiated = false
     },
+    showPlaylist(){
+      this.$refs.playlist.show();
+    },
     ...mapMutations({
       setFullScreen: "SET_FULL_SCREEN",
       setPlayingState:'SET_PLAYING_STATE',
@@ -427,7 +432,9 @@ export default {
   },
   watch:{
     currentSong(newSong,oldSong){
-
+      if(!newSong.id){
+        return
+      }
       if(oldSong == newSong){
         return
       }
@@ -452,7 +459,8 @@ export default {
   components:{
     ProgressBar,
     ProgressCircle,
-    Scroll
+    Scroll,
+    Playlist
   }
 };
 </script>
