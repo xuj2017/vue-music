@@ -4,14 +4,14 @@
           <div class="list-wrapper" @click.stop>
               <div class="list-header">
                   <h1 class="title">
-                      <i class="icon"></i>
-                      <span class="text"></span>
-                      <span class="clear"><i class="icon-clear"></i></span>
+                      <i class="icon" :class="iconMode" @click="changeMode"></i>
+                      <span class="text">{{modeText}}</span>
+                      <span class="clear" @click="showConfirm"><i class="icon-clear"></i></span>
                   </h1>
               </div>
               <scroll class="list-content" ref="listContent" :data="sequenceList">
-                  <ul>
-                      <li ref="listItem" class="item" @click="selectItem(item,index)" v-for="(item,index) in sequenceList">
+                  <transition-group tag="ul" name="list">
+                      <li ref="listItem" :key="item.id" class="item" @click="selectItem(item,index)" v-for="(item,index) in sequenceList">
                           <i class="current" :class="getCurrentIcon(item)"></i>
                           <span class="text">{{item.name}}</span>
                           <span class="like">
@@ -21,10 +21,10 @@
                               <i class="icon-delete"></i>
                           </span>
                       </li>
-                  </ul>
+                  </transition-group>
               </scroll>
               <div class="list-operate">
-                  <div class="add">
+                  <div class="add" @click="addSong">
                     <i class="icon-add"></i>
                     <span class="text">添加歌曲队列</span>
                   </div>
@@ -33,30 +33,35 @@
                   <span>关闭</span>
               </div>
           </div>
+          <confirm ref="confirm" @confirm="confirmClear" text="是否清空播放列表" confirmBtnText="清空"></confirm>
+          <add-song ref="addSong"></add-song>
       </div>
   </transition>
 </template>
 
 <script>
-import {mapGetters,mapMutations,mapActions} from 'vuex';
+import {mapActions} from 'vuex';
 import Scroll from 'base/scroll/scroll';
 import {playMode} from 'common/js/config';
+import Confirm from 'base/confirm/confirm';
+import {playerMixin} from 'common/js/mixin.js'
+import AddSong from 'components/add-song/add-song';
 export default {
+    mixins:[playerMixin],
     data(){
         return{
             showFlag:false
         }
     },
     components:{
-        Scroll
+        Scroll,
+        Confirm,
+        AddSong
     },
     computed:{
-        ...mapGetters([
-            'sequenceList',
-            'currentSong',
-            'playlist',
-            'mode'
-        ])
+        modeText(){
+           return this.mode === playMode.sequence ? '顺序播放' : this.mode === playMode.random ? '随机播放' : '单曲循环'
+        }
     },
     methods:{
         show(){
@@ -98,12 +103,18 @@ export default {
                 this.hide();
             }
         },
-        ...mapMutations({
-            'setCurrentIndex':'SET_CURRENT_INDEX',
-            'setPlayingState':"SET_PLAYING_STATE"
-        }),
+        showConfirm(){
+            this.$refs.confirm.show();
+        },
+        confirmClear(){
+            this.deleteSongList();
+            this.hide();
+        },
+        addSong(){
+            this.$refs.addSong.show();
+        },
         ...mapActions([
-            'deleteSong'
+            'deleteSong','deleteSongList'
         ])
     },
     watch:{
@@ -139,7 +150,7 @@ export default {
   &.list-fade-leave-to {
     opacity: 0;
     .list-wrapper {
-      transform: translate3d(0, 1000%, 0);
+      transform: translate3d(0, 100%, 0);
     }
   }
 //   &.list-fade-enter {
