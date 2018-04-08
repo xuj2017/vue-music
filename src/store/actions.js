@@ -8,7 +8,8 @@ import {
 import {
   saveSearch,
   delateSearch,
-  clearSearch
+  clearSearch,
+  savePlay
 } from 'common/js/cache';
 
 function findIndex(list, song) {
@@ -143,9 +144,13 @@ export const deleteSong = function ({
   commit(types.SET_PLAYING_STATE, playingState)
 }
 
-export  const deleteSongList = function({commit}){
+export const deleteSongList = function ({ commit }) {
   commit(types.SET_CURRENT_INDEX, -1)
   commit(types.SET_PLAYLIST, [])
   commit(types.SET_SEQUENCE_LIST, [])
   commit(types.SET_PLAYING_STATE, false)
+}
+
+export const savePlayHistory = function ({commit}, song) {
+  commit(types.SET_PLAY_HISTORY, savePlay(song))
 }
